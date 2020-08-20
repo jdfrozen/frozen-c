@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef unsigned int            uint32_t;
+typedef unsigned int  uint32_t;
 
 #define COLUMN_USERNAME_SIZE 32
 #define COLUMN_EMAIL_SIZE 255
@@ -11,7 +11,7 @@ typedef unsigned int            uint32_t;
 typedef struct {
   uint32_t id;
   char username[COLUMN_USERNAME_SIZE];
-  char email[COLUMN_EMAIL_SIZE]
+  char email[COLUMN_EMAIL_SIZE];
 }Row;
 
 typedef struct {
