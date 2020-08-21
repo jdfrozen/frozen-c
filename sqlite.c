@@ -16,6 +16,7 @@ typedef enum {
 } MetaCommandResult;
 typedef enum { PREPARE_SUCCESS,PREPARE_SYNTAX_ERROR, PREPARE_UNRECOGNIZED_STATEMENT } PrepareResult;
 typedef enum { STATEMENT_INSERT, STATEMENT_SELECT } StatementType;
+typedef enum { EXECUTE_SUCCESS, EXECUTE_TABLE_FULL } ExecuteResult;
 typedef struct {
   StatementType type;
   Row row_to_insert;
