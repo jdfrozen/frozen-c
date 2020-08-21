@@ -18,7 +18,7 @@ void print_prompt() { printf("db > "); }
 MetaCommandResult do_meta_command(InputBuffer* input_buffer,Table *table) {
   if (strcmp(input_buffer->buffer, ".exit") == 0) {
     close_input_buffer(input_buffer);
-    free_table(table);
+    db_close(table);
     exit(EXIT_SUCCESS);
   } else {
     return META_COMMAND_UNRECOGNIZED_COMMAND;
@@ -61,7 +61,12 @@ PrepareResult prepare_statement(InputBuffer* input_buffer,
 }
 
 int main(int argc, char* argv[]) {
-   Table* table = new_table();
+   if (argc < 2) {
+     printf("Must supply a database filename.\n");
+     exit(EXIT_FAILURE);
+   }
+   char* filename = argv[1];
+   Table* table = db_open(filename);
    InputBuffer* input_buffer = new_input_buffer();
    while (true) {
      print_prompt();
