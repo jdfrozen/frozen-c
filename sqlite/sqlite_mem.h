@@ -32,6 +32,12 @@ typedef struct {
   uint32_t num_rows;
 } Table;
 
+typedef struct {
+  Table* table;
+  uint32_t row_num;
+  bool end_of_table;  // Indicates a position one past the last element
+} Cursor;
+
 ExecuteResult execute_statement(Statement* statement,Table* table);
 //insert
 ExecuteResult execute_insert(Statement* statement, Table* table);
