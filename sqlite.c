@@ -17,10 +17,6 @@ typedef enum {
 typedef enum { PREPARE_SUCCESS,PREPARE_SYNTAX_ERROR, PREPARE_UNRECOGNIZED_STATEMENT } PrepareResult;
 typedef enum { STATEMENT_INSERT, STATEMENT_SELECT } StatementType;
 typedef enum { EXECUTE_SUCCESS, EXECUTE_TABLE_FULL } ExecuteResult;
-typedef struct {
-  StatementType type;
-  Row row_to_insert;
-} Statement;
 //行定义
 #define COLUMN_USERNAME_SIZE 32
 #define COLUMN_EMAIL_SIZE 255
@@ -29,6 +25,10 @@ typedef struct {
   char username[COLUMN_USERNAME_SIZE];
   char email[COLUMN_EMAIL_SIZE];
 }Row;
+typedef struct {
+  StatementType type;
+  Row row_to_insert;
+} Statement;
 //行与地址存储转换
 #define size_of_attribute(Struct, Attribute) sizeof(((Struct*)0)->Attribute)
 #define size_add(x, y) (x+y)
@@ -89,7 +89,7 @@ ExecuteResult execute_select(Statement* statement, Table* table) {
   return EXECUTE_SUCCESS;
 }
 //处理命令
-ExecuteResult execute_statement(Statement* statement) {
+ExecuteResult execute_statement(Statement* statement，Table* table) {
   switch (statement->type) {
     case (STATEMENT_INSERT):
       printf("This is where we would do an insert.\n");
@@ -98,6 +98,21 @@ ExecuteResult execute_statement(Statement* statement) {
       printf("This is where we would do a select.\n");
       return execute_select(statement, table);
   }
+}
+//初始化表
+Table* new_table() {
+  Table* table = malloc(sizeof(Table));
+  table->num_rows = 0;
+  for (uint32_t i = 0; i < TABLE_MAX_PAGES; i++) {
+     table->pages[i] = NULL;
+  }
+  return table;
+}
+void free_table(Table* table) {
+    for (int i = 0; table->pages[i]; i++) {
+ free(table->pages[i]);
+    }
+    free(table);
 }
 
 void print_prompt() { printf("db > "); }
@@ -123,9 +138,10 @@ void close_input_buffer(InputBuffer* input_buffer) {
    input_buffer->buffer = NULL;
  }
 
-MetaCommandResult do_meta_command(InputBuffer* input_buffer) {
+MetaCommandResult do_meta_command(InputBuffer* input_buffer,Table *table) {
   if (strcmp(input_buffer->buffer, ".exit") == 0) {
     close_input_buffer(input_buffer);
+    free_table(table);
     exit(EXIT_SUCCESS);
   } else {
     return META_COMMAND_UNRECOGNIZED_COMMAND;
@@ -153,6 +169,7 @@ PrepareResult prepare_statement(InputBuffer* input_buffer,
 }
 
  int main(int argc, char* argv[]) {
+   Table* table = new_table();
    InputBuffer* input_buffer = new_input_buffer();
    while (true) {
      print_prompt();
@@ -181,7 +198,7 @@ PrepareResult prepare_statement(InputBuffer* input_buffer,
                input_buffer->buffer);
         continue;
     }
-    execute_statement(&statement);
+    execute_statement(&statement,table);
     printf("Executed.\n");
    }
  }
