@@ -87,6 +87,17 @@ ExecuteResult execute_select(Statement* statement, Table* table) {
   }
   return EXECUTE_SUCCESS;
 }
+//处理命令
+ExecuteResult execute_statement(Statement* statement) {
+  switch (statement->type) {
+    case (STATEMENT_INSERT):
+      printf("This is where we would do an insert.\n");
+       return execute_insert(statement, table);
+    case (STATEMENT_SELECT):
+      printf("This is where we would do a select.\n");
+      return execute_select(statement, table);
+  }
+}
 
 void print_prompt() { printf("db > "); }
 
@@ -138,17 +149,6 @@ PrepareResult prepare_statement(InputBuffer* input_buffer,
   }
 
   return PREPARE_UNRECOGNIZED_STATEMENT;
-}
-
-void execute_statement(Statement* statement) {
-  switch (statement->type) {
-    case (STATEMENT_INSERT):
-      printf("This is where we would do an insert.\n");
-      break;
-    case (STATEMENT_SELECT):
-      printf("This is where we would do a select.\n");
-      break;
-  }
 }
 
  int main(int argc, char* argv[]) {
