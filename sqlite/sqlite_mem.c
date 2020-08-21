@@ -159,9 +159,9 @@ void pager_flush(Pager* pager, uint32_t page_num, uint32_t size) {
 }
 //关闭并清理内存
 void db_close(Table* table) {
+  printf("closing db file.\n");
   Pager* pager = table->pager;
   uint32_t num_full_pages = table->num_rows / ROWS_PER_PAGE;
-
   for (uint32_t i = 0; i < num_full_pages; i++) {
     if (pager->pages[i] == NULL) {
       continue;
@@ -170,7 +170,6 @@ void db_close(Table* table) {
     free(pager->pages[i]);
     pager->pages[i] = NULL;
   }
-
   // There may be a partial page to write to the end of the file
   // This should not be needed after we switch to a B-tree
   uint32_t num_additional_rows = table->num_rows % ROWS_PER_PAGE;
