@@ -13,7 +13,7 @@ typedef struct {
 typedef struct {
   StatementType type;
   Row row_to_insert;
-} Statement;
+}Statement;
 
 //行与地址存储转换
 #define size_of_attribute(Struct, Attribute) sizeof(((Struct*)0)->Attribute)
