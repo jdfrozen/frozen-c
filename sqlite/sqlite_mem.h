@@ -23,18 +23,20 @@ typedef struct {
 typedef struct {
   int file_descriptor;
   uint32_t file_length;
+  uint32_t num_pages;
   void* pages[TABLE_MAX_PAGES];
 } Pager;
 
 typedef struct {
   void* pages[TABLE_MAX_PAGES];
   Pager* pager;
-  uint32_t num_rows;
+  uint32_t root_page_num;
 } Table;
 
 typedef struct {
   Table* table;
-  uint32_t row_num;
+  uint32_t page_num;
+  uint32_t cell_num;
   bool end_of_table;  // Indicates a position one past the last element
 } Cursor;
 
@@ -44,4 +46,7 @@ ExecuteResult execute_insert(Statement* statement, Table* table);
 //select
 ExecuteResult execute_select(Statement* statement, Table* table);
 Table* db_open(const char* filename);
+void* get_page(Pager* pager, uint32_t page_num);
 void db_close(Table* table);
+void print_leaf_node(void* node);
+void print_constants();
