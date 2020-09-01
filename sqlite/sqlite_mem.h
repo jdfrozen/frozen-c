@@ -8,6 +8,7 @@
 typedef enum { PREPARE_SUCCESS, PREPARE_UNRECOGNIZED_STATEMENT } PrepareResult;
 typedef enum { STATEMENT_INSERT, STATEMENT_SELECT } StatementType;
 typedef enum { EXECUTE_SUCCESS, EXECUTE_TABLE_FULL } ExecuteResult;
+typedef enum { NODE_INTERNAL, NODE_LEAF } NodeType;
 
 typedef struct {
   uint32_t id;
