@@ -1,11 +1,15 @@
 #include<stdio.h>
+#include<sys/types.h>
+#include<sys/stat.h>
+#include<fcntl.h>
+#include<unistd.h>
+#include<errno.h>
 
-struct Book{
-  int a;
-  char title[6];
-};
 int main(int argc,char *argv[]){
-    struct Book book = {1,"frozen"};
-    printf("%d",sizeof(book));
+    const char path[12] = "frozen.db";
+    int  fd=-1;
+    if((fd=creat(&path,0644)) < 0){
+        printf("creat failure:\n");
+    }
     return 0;
 }
