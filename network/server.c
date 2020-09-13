@@ -5,11 +5,10 @@
 #include<arpa/inet.h>
 #include<sys/socket.h>
 
+void error_handling(char *message);
+
 int main(int argc,char *argv[]){
-    const char path[12] = "frozen.db";
-    int  fd=-1;
-    if((fd=creat(&path,0644)) < 0){
-        printf("creat failure:\n");
-    }
+    int serv_sock;
+    int clnt_sock;
     return 0;
 }
