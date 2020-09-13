@@ -1,9 +1,9 @@
 #include<stdio.h>
-#include<sys/types.h>
-#include<sys/stat.h>
-#include<fcntl.h>
+#include<stdlib.h>
+#include<string.h>
 #include<unistd.h>
-#include<errno.h>
+#include<arpa/inet.h>
+#include<sys/socket.h>
 
 int main(int argc,char *argv[]){
     const char path[12] = "frozen.db";
