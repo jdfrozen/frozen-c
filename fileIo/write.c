@@ -6,7 +6,7 @@
 #include<errno.h>
 
 //打开文件
-void open(){
+void openTest(){
     const char path[12] = "frozen.db";
     int  fd=-1;
     //fd=creat(path,0644);
@@ -14,7 +14,7 @@ void open(){
     close(fd);
 }
 //覆盖写文件
-void cover(){
+void coverTest(){
     char path[12] = "frozen.db";
     int fd=-1;
     fd=open(path,O_WRONLY|O_CREAT,0644);
@@ -27,7 +27,7 @@ void cover(){
     close(fd);
 }
 //指定覆盖写文件
-void hollow(){
+void hollowTest(){
     char path[12] = "frozen.db";
     int fd=-1;
     fd=open(path,O_WRONLY|O_CREAT,0644);
@@ -40,7 +40,7 @@ void hollow(){
     close(fd);
 }
 //追加写文件（原子）
-void appand(){
+void appandTest(){
     char path[12] = "frozen.db";
     int fd=-1;
     fd=open(path,O_WRONLY|O_CREAT|O_APPEND,0644);
@@ -51,6 +51,6 @@ void appand(){
 }
 
 int main(int argc,char *argv[]){
-    open();
+    openTest();
     return 0;
 }
