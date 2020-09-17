@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include<sys/types.h>
 #include<sys/stat.h>
-#include <unistd.h>
+#include<fcntl.h>
+#include "unistd.h"
 #include <string.h>
 
 int main(int argc,char *argv[]){
@@ -13,4 +14,14 @@ int main(int argc,char *argv[]){
         exit(1);
     }
     printf("st_mode %d",(int)sbuf.st_mode);
+    int fd=open(path,O_WRONLY|O_CREAT|O_APPEND,0644);
+    struct stat fsbuf;
+    memset(&fsbuf, 0, sizeof(fsbuf));
+    if(fstat(fd,&fsbuf)==-1){
+        exit(1);
+    }
+    printf("fst_mode %d \n",(int)fsbuf.st_mode);
+    if(S_ISREG(fsbuf.st_mode)){
+       printf("regular\n");
+    }
 }
