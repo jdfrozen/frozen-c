@@ -50,6 +50,7 @@ void appandTest(){
     close(fd);
 }
 
+
 int main(int argc,char *argv[]){
     openTest();
     return 0;
