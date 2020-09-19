@@ -53,7 +53,7 @@ void appandTest(){
 void utimeTest(){
     char path[12] = "frozen.db";
     struct stat statbuf;
-    struct utimbuf  timebuf;
+    struct utimbuf timebuf;
     stat(path, &statbuf);
     int fd = open(path, O_RDWR | O_TRUNC);
     close(fd);
