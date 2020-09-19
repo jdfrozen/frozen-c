@@ -54,7 +54,7 @@ void utimeTest(){
     char path[12] = "frozen.db";
     struct stat statbuf;
     struct utimbuf  timebuf;
-    stat(path, &statbuf)
+    stat(path, &statbuf);
     fd = open(path, O_RDWR | O_TRUNC)
     close(fd);
     timebuf.actime = statbuf.st_atime;
