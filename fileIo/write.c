@@ -55,7 +55,7 @@ void utimeTest(){
     struct stat statbuf;
     struct utimbuf  timebuf;
     stat(path, &statbuf);
-    fd = open(path, O_RDWR | O_TRUNC)
+    int fd = open(path, O_RDWR | O_TRUNC);
     close(fd);
     timebuf.actime = statbuf.st_atime;
     timebuf.modtime = statbuf.st_mtime;
