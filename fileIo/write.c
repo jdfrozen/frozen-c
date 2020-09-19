@@ -3,6 +3,7 @@
 #include<sys/stat.h>
 #include<fcntl.h>
 #include<unistd.h>
+#include<utime.h>
 #include<errno.h>
 
 //打开文件
@@ -49,9 +50,20 @@ void appandTest(){
     printf("write h %d\n",length);
     close(fd);
 }
+void utimeTest(){
+    char path[12] = "frozen.db";
+    struct stat statbuf;
+    struct utimbuf  timebuf;
+    stat(path, &statbuf)
+    fd = open(path, O_RDWR | O_TRUNC)
+    close(fd);
+    timebuf.actime = statbuf.st_atime;
+    timebuf.modtime = statbuf.st_mtime;
+    utime(path, &timebuf);
+}
 
 
 int main(int argc,char *argv[]){
-    openTest();
+    utimeTest();
     return 0;
 }
