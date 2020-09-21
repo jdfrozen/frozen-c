@@ -15,9 +15,20 @@ void mkdirTest(){
         printf("mkdir error");
     }
 }
+//打开文件
+void rmdirTest(){
+    const char path[12] = "frozen.db";
+    int result=rmdir(path);
+    if(result!=-1){
+        printf("rmdir success");
+    }else{
+        printf("rmdir error");
+    }
+}
 
 
 int main(int argc,char *argv[]){
     mkdirTest();
+    rmdirTest();
     return 0;
 }
