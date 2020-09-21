@@ -15,5 +15,6 @@ int main(int argc,char *argv[]){
     ssize_t length=read(fd,h,10);
     printf("read length %d\n",length);
     printf("read h %s\n",h);
+    close(fd);
     return 0;
 }
