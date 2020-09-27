@@ -16,6 +16,7 @@ int main(int argc,char *argv[]){
         wait(NULL);
         printf("parent val=%d, &val = %d\n", g_val, &g_val);
     }
+
     system("time");
     return 0;
 }
