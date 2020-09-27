@@ -10,9 +10,10 @@ int main(int argc,char *argv[]){
         //子进程
         g_val = 100;
         printf("child val=%d, &val = %d\n", g_val, &g_val);
+        sleep(1);
     }
     else{
-        sleep(3);
+        wait(NULL);
         printf("parent val=%d, &val = %d\n", g_val, &g_val);
     }
     system("time");
