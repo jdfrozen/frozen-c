@@ -1,6 +1,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+//对象的输入输出
+
 struct Book{
  int a;
  char title[6];

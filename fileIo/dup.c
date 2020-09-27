@@ -4,6 +4,8 @@
 #include<unistd.h>
 
 //复制文件描述符
+
+//复制文件描述符
 void dupTest(){
     char path[12] = "frozen.db";
     int fd=open(path,O_WRONLY|O_CREAT|O_APPEND,0644);
@@ -18,7 +20,9 @@ void dupTest(){
 void dup2Test(){
     char path[12] = "frozen.db";
     int fd=open(path,O_WRONLY|O_CREAT|O_APPEND,0644);
-    int fd1=dup2(fileno(stdout),fd);
+    //获取标准输出的文件描述符
+    int sfd=fileno(stdout);
+    int fd1=dup2(sfd,fd);
     char h[12]="hhh";
     ssize_t length=write(fd,h,12) ;
     close(fd);

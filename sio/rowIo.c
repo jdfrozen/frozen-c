@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+//行输入输出
 
 //行标准输出
 void lwio(){

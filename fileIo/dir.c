@@ -5,6 +5,7 @@
 #include<unistd.h>
 #include<errno.h>
 #include <dirent.h>
+//文件夹相关的操作
 
 //创建目录
 void mkdirTest(){

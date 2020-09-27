@@ -6,6 +6,8 @@
 #include "unistd.h"
 #include <string.h>
 
+//文件的状态信息
+
 int main(int argc,char *argv[]){
     char path[]="frozen.db";
     struct stat sbuf;

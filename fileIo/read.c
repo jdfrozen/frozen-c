@@ -5,6 +5,8 @@
 #include<unistd.h>
 #include<errno.h>
 
+//读取文件
+
 int main(int argc,char *argv[]){
     char path[12] = "frozen.db";
     int fd=-1;

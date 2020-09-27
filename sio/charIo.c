@@ -1,5 +1,7 @@
 #include<stdio.h>
 
+//单个字符的输入输出
+
 //字符标准输出
 void cwio(){
     const char path[12] = "frozen.db";
