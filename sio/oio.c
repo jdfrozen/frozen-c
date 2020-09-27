@@ -5,7 +5,6 @@ struct Book{
  int a;
  char title[6];
 };
-//行标准输出
 void owio(){
     const char path[12] = "frozen.db";
     FILE* file =fopen(path, "r+b");
@@ -15,7 +14,6 @@ void owio(){
     }
     fclose(file);
 }
-//行标准输入
 void orio(){
     const char path[12] = "frozen.db";
     FILE*  file =fopen(path, "r+b");
