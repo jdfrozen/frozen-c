@@ -21,5 +21,5 @@ int main() {
         signal(SIGHUP, sigroutine); //* 下面设置三个信号的处理方法
         signal(SIGINT, sigroutine);
         signal(SIGQUIT, sigroutine);
-        for (;;) ;
+        sleep(60);
 }
