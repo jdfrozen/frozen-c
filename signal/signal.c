@@ -6,19 +6,23 @@ void sigroutine(int dunno){
         switch (dunno) {
         case 1:
         printf("Get a signal -- SIGHUP ");
+        fflush(stdin);
         break;
         case 2:
         printf("Get a signal -- SIGINT ");
+        fflush(stdin);
         break;
         case 3:
         printf("Get a signal -- SIGQUIT ");
+        fflush(stdin);
         break;
         }
         return;
 }
 int main() {
         printf("process id is %d ",getpid());
-        signal(SIGHUP, sigroutine); //* 下面设置三个信号的处理方法
+        fflush(stdin);
+        signal(SIGHUP, sigroutine);
         signal(SIGINT, sigroutine);
         signal(SIGQUIT, sigroutine);
         sleep(60);
