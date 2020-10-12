@@ -1,86 +1,57 @@
-#include <sys/types.h>
-#include <unistd.h>
-#include <fcnt1.h>
-void lock_init(flock *lock, short type, short whence, off_t start, off_t len)
-{
-    if (lock == NULL)
-        return;
+#include<stdio.h>
+#include<fcntl.h>
 
-    lock->l_type = type;
-    lock->l_whence = whence;
-    lock->l_start = start;
-    lock->l_len = len;
-}
+#define read_lock(fd,offset,whence,len) lock_register((fd),F_SETLK,F_RDLCK,(offset),(whence),(len))
+#define readw_lock(fd,offset,whence,len) lock_register((fd),F_SETLKW,F_RDLCK,(offset),(whence),(len))
+#define write_lock(fd,offset,whence,len) lock_register((fd),F_SETLK,F_WRLCK,(offset),(whence),(len))
+#define writew_lock(fd,offset,whence,len) lock_register((fd),F_SETLKW,F_WRLCK,(offset),(whence),(len))
+#define un_lock(fd, offset, whence, len) lock_register((fd), F_SETLK, F_UNLCK, (offset), (whence), (len))
 
-int readw_lock(int fd)
+int lock_register(int fd,int cmd,int type,off_t offset,int whence,off_t len);
+int main(int argc, char * argv[])
 {
-    if (fd < 0)
+    int fd ;
+    int val;
+    int val1;
+    pid_t pid;
+    fd= open("./tmp/truncate.c",O_RDWR);
+    pid = fork();
+    if(pid < 0)/*fork error,and exit.*/
     {
-        return -1;
+        printf("fork error./n");
+        exit(1);
     }
-
-    struct flock lock;
-    lock_init(&lock, F_RDLCK, SEEK_SET, 0, 0);
-
-    if (fcntl(fd, F_SETLKW, &lock) != 0)
+    if(pid == 0)/*In the child, try read lock.*/
     {
-        return -1;
+       printf("In the child try to retain read lock ");
+        val1 =  read_lock(fd,0,SEEK_SET,0);
+        if(val ==0)
+        {
+            printf("success,pid is %d./n",getpid());
+        }
+        else
+        {
+            printf("failed,pid is %d./n",getpid());
+        }
+    }
+    else
+    {/*In the parent,sets write lock to prevent others to read/write*/
+        printf("Parent sets write lock,pid is %d./n",getpid());
+        val = write_lock(fd,0,SEEK_SET,0);
+        sleep(1);
     }
 
     return 0;
 }
-
-int writew_lock(int fd)
+/*register read/write lock*/
+int lock_register(int fd,int cmd,int type,off_t offset,int whence,off_t len)
 {
-    if (fd < 0)
-    {
-        return -1;
-    }
-
+    int val = 0;
     struct flock lock;
-    lock_init(&lock, F_WRLCK, SEEK_SET, 0, 0);
-
-    if (fcntl(fd, F_SETLKW, &lock) != 0)
-    {
-        return -1;
-    }
-
-    return 0;
-}
-
-int unlock(int fd)
-{
-    if (fd < 0)
-    {
-        return -1;
-    }
-
-    struct flock lock;
-    lock_init(&lock, F_UNLCK, SEEK_SET, 0, 0);
-
-    if (fcntl(fd, F_SETLKW, &lock) != 0)
-    {
-        return -1;
-    }
-
-    return 0;
-}
-
-pid_t lock_test(int fd, short type, short whence, off_t start, off_t len)
-{
-    flock lock;
-    lock_init(&lock, type, whence, start, len);
-
-    if (fcntl(fd, F_GETLK, &lock) == -1)
-    {
-        return -1;
-    }
-
-    if(lock.l_type == F_UNLCK)
-        return 0;
-    return lock.l_pid;
-}
-
-int main(int argc, char* argv[]){
+    lock.l_type = type;
+    lock.l_start = offset;
+    lock.l_whence  = whence;
+    lock.l_len = len;
+    val = fcntl(fd,cmd,&lock);
 
 }
