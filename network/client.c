@@ -20,10 +20,10 @@ int main(int argc, char* argv[]){
     serv_addr.sin_family=AF_INET;
     serv_addr.sin_addr.s_addr=inet_addr(argv[1]);
     serv_addr.sin_port=htons(atoi(argv[2]));
-    if(connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr))==-1){rror_handling("connect() error!");}
+    if(connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr))==-1){error_handling("connect() error!");}
     while(1){
-        fput("Input message(Q to quit):",stdout);
-        fget(message,BUF_SIZE,stdin);
+        fputs("Input message(Q to quit):",stdout);
+        fgets(message,BUF_SIZE,stdin);
         if(!strcmp(message,"q\n")||!strcmp(message,"Q\n")){break;}
         write(sock,message,strlen(message));
         str_len=read(sock, message, BUF_SIZE-1);
