@@ -4,9 +4,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-
 void error_handling(char *message);
-
 int main(int argc, char* argv[]){
     struct sockaddr_in serv_addr;
     char message[30];
@@ -28,7 +26,6 @@ int main(int argc, char* argv[]){
     close(sock);
     return 0;
 }
-
 void error_handling(char *message){
     fputs(message, stderr);
     fputc('\n', stderr);
