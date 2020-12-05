@@ -4,10 +4,11 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#define BUF_SIZE 1024
 void error_handling(char *message);
 int main(int argc, char* argv[]){
     struct sockaddr_in serv_addr;
-    char message[30];
+    char message[BUF_SIZE];
     int str_len;
     if(argc!=3){
         printf("Usage : %s <IP> <port>\n", argv[0]);
@@ -20,9 +21,16 @@ int main(int argc, char* argv[]){
     serv_addr.sin_addr.s_addr=inet_addr(argv[1]);
     serv_addr.sin_port=htons(atoi(argv[2]));
     if(connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr))==-1){rror_handling("connect() error!");}
-    str_len=read(sock, message, sizeof(message)-1);
-    if(str_len==-1){error_handling("read() error!");}
-    printf("Message from server: %s \n", message);
+    while(1){
+        fput("Input message(Q to quit):",stdout);
+        fget(message,BUF_SIZE,stdin);
+        if(!strcmp(message,"q\n")||!strcmp(message,"Q\n")){break;}
+        write(sock,message,strlen(message));
+        str_len=read(sock, message, BUF_SIZE-1);
+        if(str_len==-1){error_handling("read() error!");}
+        message[str_len]=0;
+        printf("Message from server: %s \n", message);
+    }
     close(sock);
     return 0;
 }
