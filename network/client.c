@@ -30,7 +30,7 @@ int main(int argc, char* argv[]){
         while(recv_len<str_len){
             int recv_cnt=read(sock, &message[recv_len], BUF_SIZE-1);
             if(recv_cnt==-1){
-                error_handling("read() error")
+                error_handling("read() error!")
             }
             recv_len+=recv_cnt;
         }
