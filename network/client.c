@@ -5,43 +5,49 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #define BUF_SIZE 1024
-void error_handling(char *message);
-int main(int argc, char* argv[]){
-    struct sockaddr_in serv_addr;
-    char message[BUF_SIZE];
-    int str_len;
-    if(argc!=3){
-        printf("Usage : %s <IP> <port>\n", argv[0]);
-        exit(1);
-    }
-    int sock=socket(PF_INET, SOCK_STREAM, 0);
-    if(sock == -1){error_handling("socket() error");}
-    memset(&serv_addr, 0, sizeof(serv_addr));
-    serv_addr.sin_family=AF_INET;
-    serv_addr.sin_addr.s_addr=inet_addr(argv[1]);
-    serv_addr.sin_port=htons(atoi(argv[2]));
-    if(connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr))==-1){error_handling("connect() error!");}
-    while(1){
-        fputs("Input message(Q to quit):",stdout);
-        fgets(message,BUF_SIZE,stdin);
-        if(!strcmp(message,"q\n")||!strcmp(message,"Q\n")){break;}
-        str_len=write(sock,message,strlen(message));
-        int recv_len=0;
-        while(recv_len<str_len){
-            int recv_cnt=read(sock, &message[recv_len], BUF_SIZE-1);
-            if(recv_cnt==-1){
-                error_handling("read() error!");
-            }
-            recv_len+=recv_cnt;
-        }
-        message[str_len]=0;
-        printf("Message from server: %s \n", message);
-    }
-    close(sock);
-    return 0;
-}
-void error_handling(char *message){
+#define RLT_SIZE 4
+#define OPSZ 4
+void error_handling(char *message)
+{
     fputs(message, stderr);
     fputc('\n', stderr);
     exit(1);
+}
+int main(int argc, const char * argv[]) {
+    int sock;
+    char opmsg[BUF_SIZE];
+    int result, opnd_cnt, i;
+    struct sockaddr_in serv_adr;
+    if (argc != 3) {
+        printf("Usage: %s <IP> <port> \n", argv[0]);
+        exit(1);
+    }
+    sock = socket(PF_INET, SOCK_STREAM, 0);
+    if (sock == -1) {
+        error_handling("socket() error");
+    }
+    memset(&serv_adr, 0, sizeof(serv_adr));
+    serv_adr.sin_family = AF_INET;
+    serv_adr.sin_addr.s_addr = inet_addr(argv[1]);
+    serv_adr.sin_port = htons(atoi(argv[2]));
+    if(connect(sock, (struct sockaddr *) &serv_adr, sizeof(serv_adr)) == -1)
+        error_handling("connect() error");
+    //操作数个数(占1字节)
+    fputs("Operand count: ", stdout);
+    scanf("%d", &opnd_cnt);
+    opmsg[0] = (char)opnd_cnt;
+    //操作数(每个占4字节)
+    for (i = 0; i < opnd_cnt; i++) {
+        printf("Operand %d: ", i + 1);
+        scanf("%d", (int *)&opmsg[i * OPSZ + 1]);
+    }
+    fgetc(stdin); //读掉缓冲中的字符\n
+    //运算符(占1字节)
+    fputs("Operator: ", stdout);
+    scanf("%c", &opmsg[opnd_cnt * OPSZ + 1]);
+    write(sock, opmsg, opnd_cnt * OPSZ + 2);
+    read(sock, &result, RLT_SIZE); //因为服务端返回的结果只有4字节，可以一次性读取，所以就不需要循环读取了
+    printf("Operation result: %d \n", result);
+    close(sock);
+    return 0;
 }
