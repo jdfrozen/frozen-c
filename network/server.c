@@ -2,24 +2,26 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <signal.h>
+void timeout(int sig){
+    if(sig==SIGALRM){
+        puts("Time out!");
+    }
+    alarm(2);
+}
+void keycontrol(int sig){
+    if(sig==SIGINT){
+        puts("CTRL+C pressed");
+    }
+}
 int main(int argc,char *argv[]){
-    int status;
-    pid_t pid = fork();
-    if(pid==0){
-        puts("Hi,I am a child process! ");
-        return 3;
-    }else{
-        printf("Child Proc: %d \n",pid);
-        if(pid==0){
-            exit(7);
-        }else{
-            printf("Child PID: %d \n",pid);
-            wait(&status);
-            if(WIFEXITED(status)){printf("Child send one: %d \n",WEXITSTATUS(status));}
-            wait(&status);
-            if(WIFEXITED(status)){printf("Child send two: %d \n",WEXITSTATUS(status));}
-            sleep(30);
-        }
+    int i;
+    signal(SIGALRM,timeout);
+    signal(SIGINT,keycontrol);
+    alarm(2);
+    for(i=0;i<3;i++){
+        puts("wait...");
+        sleep(100);
     }
     return 0;
 }
