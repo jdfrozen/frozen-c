@@ -1,18 +1,17 @@
 #include <stdio.h>
 #include <unistd.h>
-int gval=11;
 int main(int argc,char *argv[]){
-    pid_t pid;
-    int lval=25;
-    pid = fork();
+    pid_t pid = fork();
     if(pid==0){
-        gval++;
-        lval++;
-        printf("Parent Proc: %d %d \n",gval,lval);
+        puts("Hi,I am a child process! ");
     }else{
-        gval++;
-        lval++;
-        printf("Child Proc: %d %d \n",gval,lval);
+        printf("Child Proc: %d \n",pid);
+        sleep(30);
+    }
+    if(pid==0){
+        puts("End child process! ");
+    }else{
+        puts("End parent process! ");
     }
     return 0;
 }
