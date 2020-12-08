@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <unistd.h>
-
 int gval=11;
 int main(int argc,char *argv[]){
     pid_t pid;
