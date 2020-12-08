@@ -53,6 +53,7 @@ int main(int argc, char* argv[]){
         if(pid == 0){
             //关闭服务端连接套接字（只对子进程生效）
             close(serv_sock);
+            //阻塞读
             while((str_len = read(clnt_sock, buf, BUF_SIZE)) != 0){
                 write(clnt_sock, buf, str_len);
             }
