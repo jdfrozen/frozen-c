@@ -3,21 +3,22 @@
 #define BUF_SIZE 30
 
 int main(int argc,char *argv[]){
-    int fds[2];
+    int fds1[2],fds2[2];
     char str1[]="Who are you?";
     char str2[]="Thank you for your message?";
     char buf[BUF_SIZE];
-    pipe(fds);
+    pipe(fds1);
+    pipe(fds2);
     pid_t pid=fork();
     if(pid==0){
-        write(fds[1],str1,sizeof(str1));
+        write(fds1[1],str1,sizeof(str1));
         sleep(2);
-        read(fds[0],buf,BUF_SIZE);
+        read(fds2[0],buf,BUF_SIZE);
         printf("Child proc output: %s \n",buf);
     }else{
-        read(fds[0],buf,BUF_SIZE);
+        read(fds1[0],buf,BUF_SIZE);
         printf("parent proc output: %s \n",buf);
-        write(fds[1],str2,sizeof(str2));
+        write(fds2[1],str2,sizeof(str2));
         sleep(3);
     }
     return 0;
