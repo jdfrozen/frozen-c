@@ -34,13 +34,11 @@ int main(int argc, char* argv[]) {
     close(sock);
     return 0;
 }
-
 void error_handling(char* message) {
     fputs(message, stderr);
     fputc('\n', stderr);
     exit(1);
 }
-
 void read_routine(int sock, char* buf) {
     while (1) {
         int str_len = read(sock, buf, BUF_SIZE);
@@ -49,7 +47,6 @@ void read_routine(int sock, char* buf) {
         printf("Message form server: %s \n", buf);
     }
 }
-
 void write_routine(int sock, char* buf) {
     while (1) {
         fgets(buf, BUF_SIZE, stdin);
