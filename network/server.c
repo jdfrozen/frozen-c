@@ -1,53 +1,48 @@
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
+/* Receiver为了接收传向任意多播地址的数据，需要经过加入多播组的过程 */
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<unistd.h>
+#include<arpa/inet.h>
+#include<sys/socket.h>
 #define BUF_SIZE 30
-void error_handling(char * messages);
-int main(int argc,char *argv[])
-{
-  int acpt_sock,recv_sock;
-  struct sockaddr_in acpt_adr,recv_adr;
-  int str_len,state;
-  socklen_t recv_adr_sz;
-  char buf[BUF_SIZE];
-  if (argc != 2){
-    printf("Usage : %s <port>\n",argv[0]);
-    exit(1);
-  }
 
-  //绑定服务端套接字
-  acpt_sock = socket(AF_INET,SOCK_STREAM,0);
-  memset(&acpt_adr,0,sizeof(acpt_adr));
-  acpt_adr.sin_family = AF_INET;
-  acpt_adr.sin_addr.s_addr = htonl(INADDR_ANY);
-  acpt_adr.sin_port = htons(atoi(argv[1]));
+void error_handling(char *message);
 
-  if (bind(acpt_sock,(struct sockaddr*)&acpt_adr,sizeof(acpt_adr)) == -1){error_handling("bind() error");}
+int main(int argc,char *argv[]){
+	int recv_sock;
+	int str_len;
+	char buf[BUF_SIZE];
+	struct sockaddr_in adr;
+	struct ip_mreq join_adr;
+	if (argc != 3) {
+		printf("Usage: %s <GroupIP> <PORT> \n",argv[0]);
+		exit(1);
+	}
+	recv_sock = socket(PF_INET,SOCK_DGRAM,0);
+	memset(&adr,0,sizeof(adr));
+	adr.sin_family = AF_INET;
+	adr.sin_addr.s_addr = htonl(INADDR_ANY);
+	adr.sin_port = htons(atoi(argv[2]));
 
-  listen(acpt_sock,5);
-  recv_adr_sz = sizeof(recv_adr);
-  recv_sock = accept(acpt_sock,(struct sockaddr*)&recv_adr,&recv_adr_sz);
-
-  //以非阻塞的方式验证待读入的数据是否存在,不存在则一直询问?,存在则退出
-  while(1){
-    str_len = recv(recv_sock,buf,sizeof(buf)-1,MSG_PEEK | MSG_DONTWAIT);
-    if (str_len > 0)
-      break;
-  }
-  buf[str_len] = 0;
-  printf("Buffering %d bytes: %s \n",str_len,buf);//拿到缓冲区的数据,
-  str_len = recv(recv_sock,buf,sizeof(buf)-1,0);//读入后会删除缓冲区
-  buf[str_len] = 0;
-  printf("Read again: %s \n",buf);
-  close(acpt_sock);
-  close(recv_sock);
-  return 0;
+	if (bind(recv_sock,(struct sockaddr*)&adr,sizeof(adr)) == -1){error_handling("bind() error!");}
+	join_adr.imr_multiaddr.s_addr = inet_addr(argv[1]);	//初始化多播组地址
+	join_adr.imr_interface.s_addr = htonl(INADDR_ANY);	//初始化待加入主机的IP地址
+	setsockopt(recv_sock,IPPROTO_IP,IP_ADD_MEMBERSHIP,(void*)&join_adr,sizeof(join_adr));			//利用可选项IP_ADD_MEMBERSHIP加入多播组
+	while(1){
+		str_len = recvfrom(recv_sock,buf,BUF_SIZE-1,0,NULL,0);  //接收多播数据
+		if (str_len < 0)
+			break;
+		buf[str_len] = 0;
+		fputs(buf,stdout);
+	}
+	close(recv_sock);
+	return 0;
 }
-void error_handling(char * messages){
-    puts(messages);
-    exit(1);
+
+void error_handling(char *message)
+{
+	fputs(message,stderr);
+	fputc('\n',stderr);
+	exit(1);
 }
