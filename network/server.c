@@ -1,4 +1,4 @@
-/* Receiver为了接收传向任意多播地址的数据，需要经过加入多播组的过程 */
+/* 基于广播的Receiver */
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -8,14 +8,13 @@
 #define BUF_SIZE 30
 
 void error_handling(char *message);
-
 int main(int argc,char *argv[]){
 	int recv_sock;
 	int str_len;
 	char buf[BUF_SIZE];
 	struct sockaddr_in adr;
 	struct ip_mreq join_adr;
-	if (argc != 3) {
+	if (argc != 2) {
 		printf("Usage: %s <GroupIP> <PORT> \n",argv[0]);
 		exit(1);
 	}
@@ -23,14 +22,10 @@ int main(int argc,char *argv[]){
 	memset(&adr,0,sizeof(adr));
 	adr.sin_family = AF_INET;
 	adr.sin_addr.s_addr = htonl(INADDR_ANY);
-	adr.sin_port = htons(atoi(argv[2]));
-
+	adr.sin_port = htons(atoi(argv[1]));
 	if (bind(recv_sock,(struct sockaddr*)&adr,sizeof(adr)) == -1){error_handling("bind() error!");}
-	join_adr.imr_multiaddr.s_addr = inet_addr(argv[1]);	//初始化多播组地址
-	join_adr.imr_interface.s_addr = htonl(INADDR_ANY);	//初始化待加入主机的IP地址
-	setsockopt(recv_sock,IPPROTO_IP,IP_ADD_MEMBERSHIP,(void*)&join_adr,sizeof(join_adr));			//利用可选项IP_ADD_MEMBERSHIP加入多播组
 	while(1){
-		str_len = recvfrom(recv_sock,buf,BUF_SIZE-1,0,NULL,0);  //接收多播数据
+		str_len = recvfrom(recv_sock,buf,BUF_SIZE-1,0,NULL,0);	//接收数据
 		if (str_len < 0)
 			break;
 		buf[str_len] = 0;
@@ -39,9 +34,7 @@ int main(int argc,char *argv[]){
 	close(recv_sock);
 	return 0;
 }
-
-void error_handling(char *message)
-{
+void error_handling(char *message){
 	fputs(message,stderr);
 	fputc('\n',stderr);
 	exit(1);
