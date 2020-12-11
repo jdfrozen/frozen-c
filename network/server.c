@@ -6,7 +6,7 @@
 #include<sys/socket.h>
 #include<sys/epoll.h>
 
-#define BUF_SIZE 100
+#define BUF_SIZE 4
 #define EPOLL_SIZE 50
 void error_handling(char *message);
 
@@ -42,26 +42,33 @@ int main(int argc, char *argv[]){
 			puts("epoll_wait() error!");
 			break;
 		}
+		puts("return epoll_wait");			//验证epoll_wait调用次数
 		for (i = 0; i < event_cnt; i++){
 			if (ep_events[i].data.fd == serv_sock){
 			    //服务器端套接字接收连接
 				adr_sz = sizeof(clnt_adr);
 				clnt_sock = accept(serv_sock,(struct sockaddr*)&clnt_adr,&adr_sz);
-				event.events = EPOLLIN;
+				setnonblockingmode(clnt_sock);			//改为非阻塞
+				event.events = EPOLLIN | EPOLLET;       //套接字事件注册方式改为边缘触发
 				event.data.fd = clnt_sock;
-				epoll_ctl(epfd,EPOLL_CTL_ADD,clnt_sock,&event);	//注册监视连接客户端套接字clnt_sock,监视其读取数据的情况
 				printf("connected client: %d \n",clnt_sock);
 			}else{
 			    //连接客户端套接字读取数据
-				str_len = read(ep_events[i].data.fd, buf, BUF_SIZE);
-				if (str_len == 0){
-				    //close request
-					epoll_ctl(epfd,EPOLL_CTL_DEL,ep_events[i].data.fd,NULL);
-					close(ep_events[i].data.fd);
-					printf("closed client: %d \n",ep_events[i].data.fd);
-				}else{
-					write(ep_events[i].data.fd, buf, str_len);//echo!
-				}
+				while(1){
+                    //边缘触发发生事件时，需要读取输入缓冲中的所有数据，因此需要循环调用read函数
+                    str_len = read(ep_events[i].data.fd, buf, BUF_SIZE);
+                    if (str_len == 0){
+                        epoll_ctl(epfd,EPOLL_CTL_DEL,ep_events[i].data.fd,NULL);
+                        close(ep_events[i].data.fd);
+                        printf("closed client: %d \n",ep_events[i].data.fd);
+                        break;
+                    }else if(str_len < 0) {
+                        if (errno == EAGAIN)
+                            break;
+                    }else{
+                        write(ep_events[i].data.fd, buf, str_len);	//echo!
+                    }
+                }
 			}
 		}
 	}
@@ -70,6 +77,10 @@ int main(int argc, char *argv[]){
 	return 0;
 }
 
+void setnonblockingmode(int fd){
+	int flag = fcntl(fd,F_GETFL,0);
+	fcntl(fd,F_SETFL,flag|O_NONBLOCK);
+}
 void error_handling(char *message){
 	fputs(message,stderr);
 	fputc('\n',stderr);
