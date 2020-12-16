@@ -1,7 +1,7 @@
 #define _GNU_SOURCE
-#include <sys types.h="">
-#include <sys wait.h="">
-#include <sys mount.h="">
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/mount.h>
 #include <stdio.h>
 #include <sched.h>
 #include <signal.h>
@@ -45,20 +45,6 @@ int container_main(void* arg)
     if (mount("tmpfs", "rootfs/run", "tmpfs", 0, NULL)!=0) {
         perror("run");
     }
-    /*
-     * 模仿Docker的从外向容器里mount相关的配置文件
-     * 你可以查看：/var/lib/docker/containers/<container_id>/目录，
-     * 你会看到docker的这些文件的。
-     */
-    if (mount("conf/hosts", "rootfs/etc/hosts", "none", MS_BIND, NULL)!=0 ||
-          mount("conf/hostname", "rootfs/etc/hostname", "none", MS_BIND, NULL)!=0 ||
-          mount("conf/resolv.conf", "rootfs/etc/resolv.conf", "none", MS_BIND, NULL)!=0 ) {
-        perror("conf");
-    }
-    /* 模仿docker run命令中的 -v, --volume=[] 参数干的事 */
-    if (mount("/tmp/t1", "rootfs/mnt", "none", MS_BIND, NULL)!=0) {
-        perror("mnt");
-    }
 
     /* chroot 隔离目录 */
     if ( chdir("./rootfs") != 0 || chroot("./") != 0 ){
@@ -80,4 +66,3 @@ int main()
     printf("Parent - container stopped!\n");
     return 0;
 }
-</container_id></unistd.h></signal.h></sched.h></stdio.h></sys></sys></sys>
