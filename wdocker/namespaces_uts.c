@@ -5,7 +5,6 @@
 #include <sched.h>
 #include <signal.h>
 #include <unistd.h>
-
 /* 定义一个给 clone 用的栈，栈大小1M */
 #define STACK_SIZE (1024 * 1024)
 static char container_stack[STACK_SIZE];
