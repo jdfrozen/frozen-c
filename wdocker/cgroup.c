@@ -9,8 +9,6 @@
 #include <sys/syscall.h>
 
 
-const int NUM_THREADS = 5;
-
 void *thread_main(void *threadid)
 {
     /* 把自己加入cgroup中（syscall(SYS_gettid)为得到线程的系统tid） */
@@ -32,13 +30,7 @@ void *thread_main(void *threadid)
 }
 int main (int argc, char *argv[])
 {
-    int num_threads;
-    if (argc > 1){
-        num_threads = atoi(argv[1]);
-    }
-    if (num_threads<=0 || num_threads>=100){
-        num_threads = NUM_THREADS;
-    }
+    int num_threads=5;
 
     /* 设置CPU利用率为50% */
     mkdir("/sys/fs/cgroup/cpu/haoel", 755);
