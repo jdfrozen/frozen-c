@@ -27,11 +27,10 @@ void appandTest(){
     }
     close(sda1_fd);
     close(null_fd);
-
 }
 
 int main(int argc,char *argv[]){
-    for(;;){
+    for(int i=0;i<5;i++){
         appandTest();
     }
     return 0;
