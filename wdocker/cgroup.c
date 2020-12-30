@@ -13,9 +13,9 @@ void *thread_main(void *threadid)
 {
     /* 把自己加入cgroup中（syscall(SYS_gettid)为得到线程的系统tid） */
     char cmd[128];
-    sprintf(cmd, "echo %ld >> /sys/fs/cgroup/cpu/haoel/tasks", syscall(SYS_gettid));
+    sprintf(cmd, "echo %ld >> /sys/fs/cgroup/cpu/frozen/tasks", syscall(SYS_gettid));
     system(cmd);
-    sprintf(cmd, "echo %ld >> /sys/fs/cgroup/cpuset/haoel/tasks", syscall(SYS_gettid));
+    sprintf(cmd, "echo %ld >> /sys/fs/cgroup/cpuset/frozen/tasks", syscall(SYS_gettid));
     system(cmd);
 
     long tid;
@@ -33,12 +33,12 @@ int main (int argc, char *argv[])
     int num_threads=5;
 
     /* 设置CPU利用率为50% */
-    mkdir("/sys/fs/cgroup/cpu/haoel", 755);
-    system("echo 50000 > /sys/fs/cgroup/cpu/haoel/cpu.cfs_quota_us");
+    mkdir("/sys/fs/cgroup/cpu/frozen", 755);
+    system("echo 50000 > /sys/fs/cgroup/cpu/frozen/cpu.cfs_quota_us");
 
-    mkdir("/sys/fs/cgroup/cpuset/haoel", 755);
+    mkdir("/sys/fs/cgroup/cpuset/frozen", 755);
     /* 限制CPU只能使用#2核和#3核 */
-    system("echo \"2,3\" > /sys/fs/cgroup/cpuset/haoel/cpuset.cpus");
+    system("echo \"2,3\" > /sys/fs/cgroup/cpuset/frozen/cpuset.cpus");
 
     pthread_t* threads = (pthread_t*) malloc (sizeof(pthread_t)*num_threads);
     int rc;
