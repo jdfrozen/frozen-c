@@ -79,24 +79,20 @@ threadpool_t *threadpool_create(int min_thr_num, int max_thr_num, int queue_max_
 			break;
 		}
 		memset(pool->threads, 0, sizeof(pthread_t)*max_thr_num);
-
 		/* 队列开辟空间 */
 		pool->task_queue = (threadpool_task_t *)malloc(sizeof(threadpool_task_t)*queue_max_size); //每个元素都是一个结构体，结构体中有一个函数指针和一个void*的指针。
 		if (pool->task_queue == NULL) {
 			printf("malloc task_queue fail");
 			break;
 		}
-
 		/* 初始化互斥琐、条件变量 */
 		if (pthread_mutex_init(&(pool->lock), NULL) != 0
 				|| pthread_mutex_init(&(pool->thread_counter), NULL) != 0
 				|| pthread_cond_init(&(pool->queue_not_empty), NULL) != 0
-				|| pthread_cond_init(&(pool->queue_not_full), NULL) != 0)
-		{
+				|| pthread_cond_init(&(pool->queue_not_full), NULL) != 0){
 			printf("init the lock or cond fail");
 			break;
 		}
-
 		/* 启动 min_thr_num 个 work thread */
 		for (i = 0; i < min_thr_num; i++) {
 			pthread_create(&(pool->threads[i]), NULL, threadpool_thread, (void *)pool);/*pool指向当前线程池*/
@@ -135,7 +131,6 @@ void *threadpool_thread(void *threadpool){
 			if( pool->wait_exit_thr_num > 0)  /* 要销毁的线程个数大于0 */
 			{
 				pool->wait_exit_thr_num--;
-
 				/*如果线程池里线程个数大于最小值时可以结束当前线程*/
 				if (pool->live_thr_num > pool->min_thr_num) {
 					printf("thread 0x%x is exiting\n", (unsigned int)pthread_self());
@@ -245,8 +240,7 @@ void *adjust_thread(void *threadpool){
 			pool->wait_exit_thr_num = DEFAULT_THREAD_VARY;      /* 要销毁的线程数 设置为10 */
 			pthread_mutex_unlock(&(pool->lock));
 
-			for (i = 0; i < DEFAULT_THREAD_VARY; i++)
-			{
+			for (i = 0; i < DEFAULT_THREAD_VARY; i++){
 				/* 通知处在空闲状态的线程, 他们会自行终止*/
 				pthread_cond_signal(&(pool->queue_not_empty));
 			}
