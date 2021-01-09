@@ -104,11 +104,8 @@ threadpool_t *threadpool_create(int min_thr_num, int max_thr_num, int queue_max_
 
 		sleep(1);  //等待线程创建完成再回到主函数中。
 		return pool;
-
 	} while (0);
-
 	threadpool_free(pool);      /* 前面代码调用失败时，释放poll存储空间 */
-
 	return NULL;
 }
 
@@ -297,7 +294,6 @@ int threadpool_free(threadpool_t *pool){
 	}
 	free(pool);
 	pool = NULL;
-
 	return 0;
 }
 
@@ -320,7 +316,6 @@ int threadpool_destroy(threadpool_t *pool){
 
 ///测试代码
 
-
 /* 线程池中的线程，模拟处理业务 */
 void *process(void *arg){
 	printf("thread 0x%x working on task %d\n ",(unsigned int)pthread_self(),*(int *)arg);
@@ -337,7 +332,6 @@ int main(){
 	for (i = 0; i < 20; i++) {
 		num[i]=i;
 		printf("add task %d\n",i);
-
 		//int threadpool_add(threadpool_t *pool, void *(*function)(void *arg), void *arg)
 		threadpool_add(thp, process, (void*)&num[i]);     /* 向任务队列中添加任务 */
 	}
